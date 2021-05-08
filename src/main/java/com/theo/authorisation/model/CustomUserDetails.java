@@ -1,19 +1,17 @@
 package com.theo.authorisation.model;
 
-import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.logging.log4j.util.Strings;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 @NoArgsConstructor
 public class CustomUserDetails implements UserDetails {
@@ -26,16 +24,18 @@ public class CustomUserDetails implements UserDetails {
     @Setter
     private String password;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private List<GrantedAuthority> authorities;
 
     public CustomUserDetails(UserDao user) {
         this.username = user.getEmail();
         this.password = user.getPassword();
-        this.authorities = Splitter.on(",")
-                .splitToStream(Optional.ofNullable(user.getRoles()).orElse(Strings.EMPTY))
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        this.authorities = Lists.newArrayList();
+//        this.authorities = Arrays.stream(Optional.ofNullable(user.getRoles()).orElseGet( () -> Strings.EMPTY).split(","))
+//                .map(SimpleGrantedAuthority::new)
+//                .collect(Collectors.toList());
+        log.debug("Done creating: {}", this);
     }
 
     @Override
