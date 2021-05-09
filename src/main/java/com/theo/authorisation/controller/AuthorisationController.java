@@ -40,8 +40,9 @@ public class AuthorisationController {
     private TokenProvider tokenProvider;
     //private JwtUtil tokenUtil;
 
+    @CrossOrigin
     @PostMapping({"/register"})
-    public ResponseEntity<UserDao> registerNewUser(@RequestBody UserDao newUser) {
+    public ResponseEntity<UserDao> registerNewUserd(@RequestBody UserDao newUser) {
         try {
             UserDao user = repository.save(UserDao.builder()
                     .email(newUser.getEmail())
@@ -58,6 +59,7 @@ public class AuthorisationController {
         }
     }
 
+    @CrossOrigin
     @RequestMapping(value = {"/authenticate"}, method = RequestMethod.POST)
     public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest request) throws Exception {
         Authentication auth = null;
