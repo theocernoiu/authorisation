@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.NoArgsConstructor;
-import lombok.experimental.UtilityClass;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +17,8 @@ import java.util.function.Function;
 @NoArgsConstructor
 public class JwtUtil {
 
-    private static String SECRET_KEY = "IS_GEHEIM";
+    //@Value("${jwt.secret}")
+    private static String SECRET_KEY = "ISGEHEIM";
 
     public static String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);

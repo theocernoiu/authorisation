@@ -40,7 +40,7 @@ public class UserDao {
 
     @Getter
     @Column(name = "IS_ADMIN", nullable = false)
-    private String isAdmin;
+    private boolean isAdmin;
 
     @Column
     @Getter

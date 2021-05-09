@@ -1,12 +1,10 @@
 package com.theo.authorisation.filter;
 
-import com.theo.authorisation.util.JwtUtil;
+import com.theo.authorisation.util.TokenProvider;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -21,27 +19,22 @@ import java.io.IOException;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    private JwtUtil jwtUtil;
+    private TokenProvider tokenProvider;
+    //private JwtUtil jwtUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         final String authorizationHeader = request.getHeader("Authorization");
 
-        String username = null;
         String jwt = null;
 
-        if(Strings.isNotEmpty(authorizationHeader) && authorizationHeader.startsWith("Bearer ")) {
+        if (Strings.isNotEmpty(authorizationHeader) && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
-            username = jwtUtil.extractUsername(jwt);
         }
 
-        if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails ud = this.userDetailsService.loadUserByUsername(username);
-            if(jwtUtil.validateToken(jwt, ud)) {
-                UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(ud, null, ud.getAuthorities());
+        if (Strings.isNotEmpty(jwt) && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (tokenProvider.validateToken(jwt)) {
+                UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) tokenProvider.getAuthentication(jwt);
                 token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(token);
             }

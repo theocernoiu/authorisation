@@ -6,9 +6,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -31,7 +33,7 @@ public class CustomUserDetails implements UserDetails {
     public CustomUserDetails(UserDao user) {
         this.username = user.getEmail();
         this.password = user.getPassword();
-        this.authorities = Lists.newArrayList();
+        this.authorities = user.isAdmin() ? Arrays.asList(new SimpleGrantedAuthority("ADMIN")) : Arrays.asList(new SimpleGrantedAuthority("USER"));
 //        this.authorities = Arrays.stream(Optional.ofNullable(user.getRoles()).orElseGet( () -> Strings.EMPTY).split(","))
 //                .map(SimpleGrantedAuthority::new)
 //                .collect(Collectors.toList());
